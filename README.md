@@ -1,3 +1,62 @@
+# 源码分析
+
+## 文件结构
+
+``` bash
+/Users/liufang/openSource/FunnyLiu/redux-logger
+└── src
+   ├── core.js - 具体的打印输出逻辑
+   ├── defaults.js
+   ├── diff.js
+   ├── helpers.js
+   └── index.js - 入口文件，提供中间件函数
+
+```
+
+
+## 外部模块依赖
+
+![img](./outer.svg)
+
+## 内部模块依赖
+
+![img](./inner.svg)
+
+
+## 功能点
+
+### 核心逻辑
+
+在index.js中，
+  
+``` js
+return ({ getState }) => next => (action) => {
+    //...
+    let returnedValue;
+    // 如果打开了异常输出功能，
+    // 则对异常进行捕获，并打印日志
+    if (logErrors) {
+      try {
+        // 执行真正的action
+        returnedValue = next(action);
+      } catch (e) {
+        logEntry.error = errorTransformer(e);
+      }
+    } else {
+      returnedValue = next(action);
+    }
+    // ...
+    // 基于配置以一定的格式打印出来日志
+    printBuffer(logBuffer, Object.assign({}, loggerOptions, { diff }));
+    logBuffer.length = 0;
+
+    if (logEntry.error) throw logEntry.error;
+    return returnedValue;
+  };
+
+```
+
+
 # Logger for Redux
 [![npm](https://img.shields.io/npm/v/redux-logger.svg?maxAge=2592000?style=plastic)](https://www.npmjs.com/package/redux-logger)
 [![npm](https://img.shields.io/npm/dm/redux-logger.svg?maxAge=2592000?style=plastic)](https://www.npmjs.com/package/redux-logger)

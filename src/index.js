@@ -80,8 +80,11 @@ const store = createStore(
     logEntry.action = action;
 
     let returnedValue;
+    // 如果打开了异常输出功能，
+    // 则对异常进行捕获，并打印日志
     if (logErrors) {
       try {
+        // 执行真正的action
         returnedValue = next(action);
       } catch (e) {
         logEntry.error = errorTransformer(e);
@@ -96,7 +99,7 @@ const store = createStore(
     const diff = loggerOptions.diff && typeof diffPredicate === 'function'
       ? diffPredicate(getState, action)
       : loggerOptions.diff;
-
+    // 基于配置以一定的格式打印出来日志
     printBuffer(logBuffer, Object.assign({}, loggerOptions, { diff }));
     logBuffer.length = 0;
 
